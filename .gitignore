@@ -25,9 +25,11 @@ Thumbs.db
 # Project specific
 *.pkl
 *.joblib
-*.csv
 .streamlit/
 !.streamlit/config.toml
+
+# Allow insurance data file
+!insurance_premium_correct*.csv
 
 # Jupyter Notebook
 .ipynb_checkpoints/
