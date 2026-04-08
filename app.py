@@ -3,6 +3,10 @@ import pandas as pd
 import numpy as np
 import pickle
 import os
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import Lasso
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 
 # Set page config
 st.set_page_config(
@@ -14,42 +18,77 @@ st.set_page_config(
 st.title("🔮 Insurance Premium Prediction Model")
 st.markdown("---")
 
-# Load model and scaler
+# Load or train model
 @st.cache_resource
-def load_model():
-    if not os.path.exists('best_model.pkl'):
-        st.error("Model not found! Please run train_model.py first.")
-        return None, None, None, None
+def load_or_train_model():
+    """Load existing model or train a new one"""
     
-    with open('best_model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    # Check if model files exist
+    if os.path.exists('best_model.pkl') and os.path.exists('scaler.pkl'):
+        try:
+            with open('best_model.pkl', 'rb') as f:
+                model = pickle.load(f)
+            with open('scaler.pkl', 'rb') as f:
+                scaler = pickle.load(f)
+            with open('model_metrics.pkl', 'rb') as f:
+                metrics = pickle.load(f)
+            return model, scaler, metrics, "Loaded"
+        except:
+            pass
     
-    with open('best_model_name.pkl', 'rb') as f:
-        model_name = pickle.load(f)
+    # Train model if files don't exist
+    st.info("🔨 Training model on first load...")
     
-    with open('scaler.pkl', 'rb') as f:
-        scaler = pickle.load(f)
-    
-    # Load metrics
-    metrics = None
-    if os.path.exists('model_metrics.pkl'):
-        with open('model_metrics.pkl', 'rb') as f:
-            metrics = pickle.load(f)
-    
-    return model, model_name, scaler, metrics
+    try:
+        # Load and prepare data
+        df = pd.read_csv('insurance_premium_correct - insurance_premium (2) (2) (4) (1).csv')
+        X = df[['age', 'bmi', 'children']]
+        y = df['charges']
+        
+        # Split and scale
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+        
+        # Train Lasso model
+        model = Lasso(alpha=0.1, max_iter=5000)
+        model.fit(X_train_scaled, y_train)
+        
+        # Calculate metrics
+        y_pred = model.predict(X_test_scaled)
+        rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+        mae = mean_absolute_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+        
+        metrics = {'rmse': rmse, 'mae': mae, 'r2': r2}
+        
+        # Save files
+        with open('best_model.pkl', 'wb') as f:
+            pickle.dump(model, f)
+        with open('scaler.pkl', 'wb') as f:
+            pickle.dump(scaler, f)
+        with open('model_metrics.pkl', 'wb') as f:
+            pickle.dump(metrics, f)
+        
+        return model, scaler, metrics, "Trained"
+    except Exception as e:
+        st.error(f"Error training model: {str(e)}")
+        return None, None, None, "Error"
 
-model, model_name, scaler, metrics = load_model()
+model, scaler, metrics, status = load_or_train_model()
 
 if model is None:
+    st.error("Failed to load or train model. Please check the data file.")
     st.stop()
 
 # Display model info
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric("Model", model_name if model_name else "Unknown")
+    st.metric("Model", "Lasso Regression")
 with col2:
     if metrics:
-        st.metric("RMSE", f"${metrics['rmse']:,.2f}")
+        st.metric("RMSE", f"${metrics['rmse']:,.0f}")
     else:
         st.metric("RMSE", "N/A")
 with col3:
@@ -58,7 +97,7 @@ with col3:
     else:
         st.metric("R² Score", "N/A")
 with col4:
-    st.metric("Features", "3 (Age, BMI, Children)")
+    st.metric("Status", f"✅ {status}")
 
 st.markdown("---")
 
