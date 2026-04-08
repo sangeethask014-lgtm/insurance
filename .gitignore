@@ -27,6 +27,7 @@ Thumbs.db
 *.joblib
 *.csv
 .streamlit/
+!.streamlit/config.toml
 
 # Jupyter Notebook
 .ipynb_checkpoints/
