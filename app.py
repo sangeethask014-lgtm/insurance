@@ -45,8 +45,9 @@ def load_or_train_model():
         
         # Look for CSV file
         csv_files = [
-            'insurance_premium_correct - insurance_premium (2) (2) (4) (1).csv',
             'insurance.csv',
+            'insurance_premium_correct - insurance_premium (2) (2) (4) (1).csv',
+            'insurance_premium.csv',
             'data.csv'
         ]
         

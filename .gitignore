@@ -28,7 +28,8 @@ Thumbs.db
 .streamlit/
 !.streamlit/config.toml
 
-# Allow insurance data file
+# Allow specific data files
+!insurance.csv
 !insurance_premium_correct*.csv
 
 # Jupyter Notebook
