@@ -5,7 +5,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge, Lasso, ElasticNet
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from xgboost import XGBRegressor
-from lightgbm import LGBMRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import pickle
 import warnings
@@ -42,8 +41,6 @@ models = {
     'ElasticNet (alpha=0.1, l1=0.2)': ElasticNet(alpha=0.1, l1_ratio=0.2, max_iter=5000),
     'XGBoost': XGBRegressor(n_estimators=300, max_depth=5, learning_rate=0.05, subsample=0.8, random_state=42, verbosity=0),
     'XGBoost (deeper)': XGBRegressor(n_estimators=300, max_depth=7, learning_rate=0.02, subsample=0.8, random_state=42, verbosity=0),
-    'LightGBM': LGBMRegressor(n_estimators=300, max_depth=6, learning_rate=0.05, num_leaves=31, random_state=42, verbose=-1),
-    'LightGBM (tuned)': LGBMRegressor(n_estimators=400, max_depth=5, learning_rate=0.03, num_leaves=25, min_child_samples=10, random_state=42, verbose=-1),
     'Gradient Boosting': GradientBoostingRegressor(n_estimators=300, learning_rate=0.01, max_depth=3, random_state=42),
 }
 
