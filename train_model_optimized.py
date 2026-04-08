@@ -3,8 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Ridge, Lasso, ElasticNet
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
-from xgboost import XGBRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import pickle
 import warnings
@@ -31,17 +30,20 @@ print("\n" + "="*80)
 print("TRAINING OPTIMIZED MODELS")
 print("="*80)
 
-# Advanced models
+# Advanced models with scikit-learn only (cloud compatible)
 models = {
+    'Ridge (alpha=1)': Ridge(alpha=1),
     'Ridge (alpha=10)': Ridge(alpha=10),
     'Ridge (alpha=50)': Ridge(alpha=50),
     'Ridge (alpha=100)': Ridge(alpha=100),
+    'Lasso (alpha=0.01)': Lasso(alpha=0.01, max_iter=5000),
     'Lasso (alpha=0.1)': Lasso(alpha=0.1, max_iter=5000),
     'Lasso (alpha=1)': Lasso(alpha=1, max_iter=5000),
     'ElasticNet (alpha=0.1, l1=0.2)': ElasticNet(alpha=0.1, l1_ratio=0.2, max_iter=5000),
-    'XGBoost': XGBRegressor(n_estimators=300, max_depth=5, learning_rate=0.05, subsample=0.8, random_state=42, verbosity=0),
-    'XGBoost (deeper)': XGBRegressor(n_estimators=300, max_depth=7, learning_rate=0.02, subsample=0.8, random_state=42, verbosity=0),
-    'Gradient Boosting': GradientBoostingRegressor(n_estimators=300, learning_rate=0.01, max_depth=3, random_state=42),
+    'ElasticNet (alpha=0.1, l1=0.5)': ElasticNet(alpha=0.1, l1_ratio=0.5, max_iter=5000),
+    'Random Forest (100 trees)': RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42),
+    'Random Forest (200 trees)': RandomForestRegressor(n_estimators=200, max_depth=15, random_state=42),
+    'Gradient Boosting': GradientBoostingRegressor(n_estimators=200, learning_rate=0.01, max_depth=3, random_state=42),
 }
 
 results = {}
